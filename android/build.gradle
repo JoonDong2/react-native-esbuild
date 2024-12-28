@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
   def kotlin_version = rootProject.ext.has("kotlinVersion") ? rootProject.ext.get("kotlinVersion") : project.properties["Esbuild_kotlinVersion"]
@@ -47,6 +49,21 @@ def supportsNamespace() {
   return (major == 7 && minor >= 3) || major >= 8
 }
 
+def resolveBuildType() {
+    Gradle gradle = getGradle()
+    String tskReqStr = gradle.getStartParameter().getTaskRequests()['args'].toString()
+
+    return tskReqStr.contains('Release') ? 'release' : 'debug'
+}
+
+def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":packages:react-native:ReactAndroid") != null
+def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+        ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
+        : file(providers.exec {
+    workingDir(rootDir)
+    commandLine("node", "--print", "require.resolve('react-native/package.json')")
+}.standardOutput.asText.get().trim()).parent
+
 android {
   if (supportsNamespace()) {
     namespace "com.esbuild"
@@ -65,6 +82,14 @@ android {
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
+    externalNativeBuild {
+        cmake {
+            cppFlags "-O2 -frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
+            arguments "-DANDROID_STL=c++_shared",
+                    "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}"
+            abiFilters(*reactNativeArchitectures())
+        }
+    }
   }
 
   buildFeatures {
@@ -99,6 +124,29 @@ android {
         java.srcDirs += ["src/oldarch"]
       }
     }
+  }
+
+  buildFeatures {
+      prefab true
+  }
+
+  externalNativeBuild {
+    cmake {
+        path "CMakeLists.txt"
+    }
+  }
+
+  packagingOptions {
+    doNotStrip resolveBuildType() == 'debug' ? "**/**/*.so" : ''
+    excludes = [
+            "META-INF",
+            "META-INF/**",
+            "**/libjsi.so",
+            "**/libc++_shared.so",
+            "**/libfbjni.so",
+            "**/libreactnativejni.so",
+            "**/libreactnative.so",
+    ]
   }
 }
 

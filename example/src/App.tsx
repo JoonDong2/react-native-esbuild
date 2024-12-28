@@ -1,17 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-esbuild';
+import { evaluateJavascript } from 'react-native-esbuild';
 
 export default function App() {
-  const [result, setResult] = useState<number | undefined>();
-
   useEffect(() => {
-    multiply(3, 7).then(setResult);
+    evaluateJavascript(`console.log("hello");`);
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Hello</Text>
     </View>
   );
 }

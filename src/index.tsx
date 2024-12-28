@@ -24,6 +24,6 @@ const Esbuild = EsbuildModule
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return Esbuild.multiply(a, b);
+export function evaluateJavascript(code: string): Promise<number> {
+  return Esbuild.evaluateJavascript(code);
 }
