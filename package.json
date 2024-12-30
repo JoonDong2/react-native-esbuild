@@ -80,7 +80,7 @@
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "del-cli": "^5.1.0",
-    "esbuild": "0.24.2",
+    "esbuild": "link:./modules/esbuild-custom",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",

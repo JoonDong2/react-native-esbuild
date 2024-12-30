@@ -5418,7 +5418,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:0.24.2, esbuild@npm:^0.24.2":
+"esbuild@link:./modules/esbuild-custom::locator=react-native-esbuild%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "esbuild@link:./modules/esbuild-custom::locator=react-native-esbuild%40workspace%3A."
+  languageName: node
+  linkType: soft
+
+"esbuild@npm:^0.24.2":
   version: 0.24.2
   resolution: "esbuild@npm:0.24.2"
   dependencies:
@@ -10479,7 +10485,7 @@ __metadata:
     "@types/jest": ^29.5.5
     "@types/react": ^18.2.44
     del-cli: ^5.1.0
-    esbuild: 0.24.2
+    esbuild: "link:./modules/esbuild-custom"
     eslint: ^8.51.0
     eslint-config-prettier: ^9.0.0
     eslint-plugin-prettier: ^5.0.1
