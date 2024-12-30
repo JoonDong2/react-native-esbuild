@@ -1,12 +1,11 @@
-import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { evaluateJavascript } from 'react-native-esbuild';
 
-export default function App() {
-  useEffect(() => {
-    evaluateJavascript(`console.log("hello");`);
-  }, []);
+setTimeout(() => {
+  evaluateJavascript(`console.log("hello");`);
+});
 
+export default function App() {
   return (
     <View style={styles.container}>
       <Text>Hello</Text>

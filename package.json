@@ -15,6 +15,16 @@
         "types": "./lib/typescript/commonjs/src/index.d.ts",
         "default": "./lib/commonjs/index.js"
       }
+    },
+    "./commands": {
+      "import": {
+        "types": "./lib/typescript/module/src/commands/index.d.ts",
+        "default": "./lib/module/commands/index.js"
+      },
+      "require": {
+        "types": "./lib/typescript/commonjs/src/commands/index.d.ts",
+        "default": "./lib/commonjs/commands/index.js"
+      }
     }
   },
   "files": [
@@ -70,6 +80,7 @@
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "del-cli": "^5.1.0",
+    "esbuild": "0.24.2",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
@@ -80,7 +91,8 @@
     "react-native-builder-bob": "^0.35.2",
     "release-it": "^17.10.0",
     "turbo": "^1.10.7",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vite": "^6.0.6"
   },
   "resolutions": {
     "@types/react": "^18.2.44"
@@ -127,7 +139,8 @@
   },
   "eslintIgnore": [
     "node_modules/",
-    "lib/"
+    "lib/",
+    "example"
   ],
   "prettier": {
     "quoteProps": "consistent",
