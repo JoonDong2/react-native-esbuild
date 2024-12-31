@@ -1,10 +1,7 @@
 import { transformAsync } from '@babel/core';
 import type { Loader } from 'esbuild';
 import path from 'path';
-import type {
-  ChainingLoader,
-  Filter,
-} from './makePluginProviderByChangingLoaders';
+import type { ChainingLoader, Filter } from './makePluginByChangingLoaders';
 
 interface Props {
   babelConfig: any;

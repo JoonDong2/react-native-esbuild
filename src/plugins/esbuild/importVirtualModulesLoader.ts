@@ -1,6 +1,6 @@
 import type { Loader } from 'esbuild';
 import path from 'path';
-import type { ChainingLoader } from './makePluginProviderByChangingLoaders';
+import type { ChainingLoader } from './makePluginByChangingLoaders';
 
 interface Props {
   modules: string[];
