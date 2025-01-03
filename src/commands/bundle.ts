@@ -12,9 +12,9 @@ import {
 } from '../constants/config';
 import { getJsPolyfills } from '../constants/polyfills';
 import { mergeConfig } from '../utils/config';
-import { fakeAssetsLoader } from '../plugins/esbuild/fakeAssetsLoader';
-import { importVirtualModulesLoader } from '../plugins/esbuild/importVirtualModulesLoader';
-import { babelLoader } from '../plugins/esbuild/babel';
+import { fakeAssetsLoader } from '../plugins/fakeAssetsLoader';
+import { importVirtualModulesLoader } from '../plugins/importVirtualModulesLoader';
+import { babelLoader } from '../plugins/babel';
 
 export async function bundle(
   _: string[],

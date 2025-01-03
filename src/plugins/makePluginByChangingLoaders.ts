@@ -1,6 +1,6 @@
 import type { OnLoadArgs, OnLoadResult, Plugin } from 'esbuild';
 import fs from 'fs';
-import { mergeFilters } from '../../utils/regexp';
+import { mergeFilters } from '../utils/regexp';
 
 const defaultPreProcess = async (args: OnLoadArgs) => {
   const { path } = args;
