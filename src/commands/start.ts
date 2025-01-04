@@ -1,40 +1,52 @@
 import { type Config } from '@react-native-community/cli-types';
-import { type StartArguments } from './types';
+import {
+  type BundleQuery,
+  type ParsedRequestListener,
+  type StartArguments,
+} from './types';
 
-import express from 'express';
 import BuildContext from '../utils/BuildContext';
-import { type Platform } from '../constants/platform';
+import configureHMR from '../utils/configureHMR';
+import replaceHMRClient from '../plugins/replaceHMRClient';
 
-interface BundleQuery {
-  platform: Platform;
-  dev: 'true' | 'false';
-  minify: 'true' | 'false';
-  // not used
-  lazy: 'true' | 'false';
-  app: string;
-  modulesOnly: 'true' | 'false';
-  runModule: 'true' | 'false';
-  excludeSource: 'true' | 'false';
-  sourcePaths: 'url-server' | 'absolute';
-}
+import { createServer } from 'http';
 
 export async function start(_: string[], config: Config, args: StartArguments) {
   const { root } = config;
   const { host = '127.0.0.1', port = 8081 } = args;
 
-  const devServer = express();
-
-  devServer.get('/status', (_, res) => {
-    res.status(200).send('packager-status:running');
-  });
-
-  const buildContexts: {
-    [key in Platform]?: BuildContext;
+  const buildContextOf: {
+    [key: string]: BuildContext;
   } = {};
 
-  devServer.get('/index.bundle', async (req, res) => {
+  const routes = new Map<string, ParsedRequestListener>();
+
+  const server = createServer((req, res) => {
+    const { url, method } = req;
+    const parsedUrl = new URL(url || '', 'http://localhost');
+    const path = parsedUrl.pathname;
+    const listener = routes.get(path);
+    return listener?.(
+      Object.assign(req, {
+        path: path,
+        query: Object.fromEntries(parsedUrl.searchParams.entries()),
+        method: method?.toLowerCase() ?? 'get',
+      }),
+      res
+    );
+  });
+
+  routes.set('/status', (_, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('packager-status:running');
+  });
+
+  routes.set('/index.bundle', async (req, res) => {
     const { platform, dev, minify } = req.query as unknown as BundleQuery;
-    let buildContext = buildContexts[platform];
+
+    if (!platform) return;
+
+    let buildContext = buildContextOf[platform];
     if (!buildContext) {
       buildContext = await BuildContext.create({
         root,
@@ -43,19 +55,28 @@ export async function start(_: string[], config: Config, args: StartArguments) {
         minify: minify === 'true',
         write: false,
         sourcemap: 'inline',
+        plugins: [replaceHMRClient()],
       });
-      buildContexts[platform] = buildContext;
+      buildContextOf[platform] = buildContext;
     }
 
     const result = await buildContext.build();
-    res.status(200).send(result.outputFiles?.[0]?.text);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end(result.outputFiles?.[0]?.text);
   });
 
-  devServer.listen(port, host, () => {
+  routes.set('/hot', configureHMR(root, server, buildContextOf));
+
+  server.listen(port, host, () => {
     console.log(`Dev server running on ${host}:${port}`);
   });
 
   return {
-    stop: () => {},
+    stop: () => {
+      server.close();
+      Object.keys(buildContextOf).forEach((platform) => {
+        buildContextOf[platform]?.dispose();
+      });
+    },
   };
 }

@@ -1,3 +1,6 @@
+import type { Platform } from '../constants/platform';
+import { IncomingMessage, ServerResponse } from 'http';
+
 export interface CommonArguments {
   /** Target application platform. */
   platform: string;
@@ -12,7 +15,7 @@ export interface BundleArguments extends CommonArguments {
   entryFile: string;
   json?: string;
   minify?: boolean;
-  dev: "true" | "false";
+  dev: 'true' | 'false';
   bundleOutput: string;
   // bundleEncoding?: string;
   sourcemapOutput?: string;
@@ -42,7 +45,7 @@ export interface CliOptions {
     reactNativePath: string;
     webpackConfigPath: string;
   };
-  command: "bundle" | "start";
+  command: 'bundle' | 'start';
   arguments:
     | {
         bundle: BundleArguments;
@@ -51,3 +54,29 @@ export interface CliOptions {
         start: StartArguments;
       };
 }
+
+export interface BundleQuery {
+  platform: Platform;
+  dev: 'true' | 'false';
+  minify: 'true' | 'false';
+  // not used
+  lazy: 'true' | 'false';
+  app: string;
+  modulesOnly: 'true' | 'false';
+  runModule: 'true' | 'false';
+  excludeSource: 'true' | 'false';
+  sourcePaths: 'url-server' | 'absolute';
+}
+
+export type ParsedRequestListener<
+  Request extends typeof IncomingMessage = typeof IncomingMessage,
+  Response extends typeof ServerResponse<
+    InstanceType<Request>
+  > = typeof ServerResponse,
+> = (
+  req: InstanceType<Request> & {
+    path: string;
+    query: { [key: string]: string };
+  },
+  res: InstanceType<Response> & { req: InstanceType<Request> }
+) => void;

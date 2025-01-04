@@ -80,6 +80,7 @@
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
+    "@types/ws": "^8.5.13",
     "del-cli": "^5.1.0",
     "esbuild": "link:./modules/esbuild-custom",
     "eslint": "^8.51.0",
@@ -93,7 +94,8 @@
     "react-native-builder-bob": "^0.35.2",
     "release-it": "^17.10.0",
     "turbo": "^1.10.7",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "ws": "^8.18.0"
   },
   "resolutions": {
     "@types/react": "^18.2.44"
