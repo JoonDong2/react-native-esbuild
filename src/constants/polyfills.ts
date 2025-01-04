@@ -9,6 +9,7 @@ export const getJsPolyfills = async (options: BuildOptions = {}) => {
         entryPoints: require('@react-native/js-polyfills')(),
         sourcemap: false,
         write: false,
+        format: 'iife',
       }) as BuildOptions
     )
   ).outputFiles!.reduce((acc, cur) => {
