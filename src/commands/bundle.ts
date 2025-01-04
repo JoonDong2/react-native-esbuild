@@ -1,20 +1,7 @@
 import { type BundleArguments } from './types';
 import { type Config } from '@react-native-community/cli-types';
 import fs from 'fs';
-import esbuild from 'esbuild';
-import {
-  makeScriptPlugin,
-  getDefine,
-  getJsStyle,
-  getResolveExtensions,
-  getUserBabelConfig,
-  getUserEsbuildConfig,
-} from '../constants/config';
-import { getJsPolyfills } from '../constants/polyfills';
-import { mergeConfig } from '../utils/config';
-import { fakeAssetsLoader } from '../plugins/fakeAssetsLoader';
-import { importVirtualModulesLoader } from '../plugins/importVirtualModulesLoader';
-import { babelLoader } from '../plugins/babel';
+import BundleService from '../utils/BuildContext';
 
 export async function bundle(
   _: string[],
@@ -31,48 +18,19 @@ export async function bundle(
     entryFile,
   } = args;
   const dev = JSON.parse(devString);
-  const define = getDefine(dev);
-  const resolveExtensions = getResolveExtensions(platform);
-
-  const userEsbuildConfig = getUserEsbuildConfig(root);
-  const userBabelConfig = getUserBabelConfig(root);
-
-  const scriptPlugin = makeScriptPlugin(
-    importVirtualModulesLoader({
-      modules: ['react-native/Libraries/Core/InitializeCore'],
-      applyIds: [entryFile],
-    }),
-    babelLoader({ babelConfig: userBabelConfig })
-  );
-
-  const defaultBuildOptions = mergeConfig(
-    userEsbuildConfig,
-    {
-      sourceRoot: root,
-      define,
-      bundle: true,
-      minify,
-      resolveExtensions,
-      plugins: [scriptPlugin],
-    },
-    getJsStyle()
-  );
-
-  const jsPolyfills = await getJsPolyfills(defaultBuildOptions);
-
-  const mergedConfig = mergeConfig(defaultBuildOptions, {
-    entryPoints: [entryFile],
-    outfile: bundleOutput,
+  const buildContext = await BundleService.create({
+    root,
+    platform,
+    minify,
+    dev,
     sourcemap: true,
-    // TODO: batter position ??
-    banner: {
-      js: jsPolyfills,
-    },
     write: true,
-    plugins: [fakeAssetsLoader()],
+    outfile: bundleOutput,
+    entryFile,
   });
 
-  await esbuild.build(mergedConfig);
+  await buildContext.build();
+  buildContext.dispose();
 
   // move sourcemap
   if (sourcemapOutput) {
