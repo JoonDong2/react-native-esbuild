@@ -26,7 +26,7 @@ export interface ChainingLoader {
   // undefined 반환하면 다음 플러그인에 위임
   load: (
     prevResult: OnLoadResult,
-    onriginArgs: OnLoadArgs
+    originArgs: OnLoadArgs
   ) => OnLoadResult | undefined | Promise<OnLoadResult | undefined>;
 }
 

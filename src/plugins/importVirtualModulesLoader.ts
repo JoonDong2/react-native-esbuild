@@ -19,7 +19,7 @@ export const importVirtualModulesLoader = ({
 
   return {
     include: applyIds,
-    load(prevResult, onriginArgs) {
+    load(prevResult, originArgs) {
       if (!prevResult.contents) {
         throw new Error('wrong entry !!');
       }
@@ -32,7 +32,7 @@ export const importVirtualModulesLoader = ({
 
       return {
         contents: `${modules.map((mod) => `import "${mod}";`).join('\n')}\n${strContents}`,
-        loader: path.extname(onriginArgs.path).slice(1) as Loader,
+        loader: path.extname(originArgs.path).slice(1) as Loader,
       };
     },
   };
