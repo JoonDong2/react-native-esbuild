@@ -6,7 +6,7 @@ import {
 } from './types';
 
 import BuildContext from '../utils/BuildContext';
-import configureHMR from '../utils/configureHMR';
+import configureHMR from '../hmr/configureHMR';
 import replaceHMRClient from '../plugins/replaceHMRClient';
 
 import { createServer } from 'http';

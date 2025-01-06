@@ -6,7 +6,7 @@ const replaceHMRClient = (): Plugin => {
     setup(build) {
       build.onResolve({ filter: /HMRClient$/ }, () => {
         return {
-          path: require.resolve('../utils/HMRClient'),
+          path: require.resolve('../hmr/HMRClient'),
         };
       });
     },

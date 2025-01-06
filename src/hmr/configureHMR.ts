@@ -1,5 +1,5 @@
 import { type Server as ServerType } from 'http';
-import type BuildContext from './BuildContext';
+import type BuildContext from '../utils/BuildContext';
 import { WebSocketServer } from 'ws';
 
 interface Client {
