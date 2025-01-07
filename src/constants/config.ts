@@ -2,7 +2,7 @@ import type { BuildOptions } from 'esbuild';
 import {
   makePluginByChangingLoaders,
   type ChainingLoader,
-} from '../plugins/makePluginByChangingLoaders';
+} from '../plugins/esbuild/makePluginByChangingLoaders';
 import { getConfig } from '../utils/config';
 
 export const getDefine = (dev: boolean) => {

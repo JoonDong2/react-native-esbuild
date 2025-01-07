@@ -7,7 +7,7 @@ import {
 
 import BuildContext from '../utils/BuildContext';
 import configureHMR from '../hmr/configureHMR';
-import replaceHMRClient from '../plugins/replaceHMRClient';
+import replaceHMRClient from '../plugins/esbuild/replaceHMRClient';
 
 import { createServer } from 'http';
 

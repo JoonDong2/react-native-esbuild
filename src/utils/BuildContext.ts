@@ -13,13 +13,13 @@ import {
   getUserEsbuildConfig,
   makeScriptPlugin,
 } from '../constants/config';
-import { importVirtualModulesLoader } from '../plugins/importVirtualModulesLoader';
-import { babelLoader } from '../plugins/babel';
+import { importVirtualModulesLoader } from '../plugins/esbuild/importVirtualModulesLoader';
+import { babelLoader } from '../plugins/esbuild/babel';
 import { mergeConfig } from './config';
 import { getJsPolyfills } from '../constants/polyfills';
-import { fakeAssetsLoader } from '../plugins/fakeAssetsLoader';
+import { fakeAssetsLoader } from '../plugins/esbuild/fakeAssetsLoader';
 import path from 'path';
-import type { ChainingLoader } from '../plugins/makePluginByChangingLoaders';
+import type { ChainingLoader } from '../plugins/esbuild/makePluginByChangingLoaders';
 
 interface Props {
   root: string;
