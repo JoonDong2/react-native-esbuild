@@ -1,7 +1,8 @@
 import { transformAsync } from '@babel/core';
-import type { Loader } from 'esbuild';
+import type { Loader, Plugin } from 'esbuild';
 import path from 'path';
 import type { ChainingLoader, Filter } from './makePluginByChangingLoaders';
+import fs from 'fs';
 
 interface Props {
   babelConfig: any;
@@ -41,6 +42,35 @@ export const babelLoader = ({
       };
 
       return result;
+    },
+  };
+};
+
+export const babel = (babelConfig: any): Plugin => {
+  return {
+    name: 'esbuild-babel',
+    setup(build) {
+      build.onLoad({ filter: /.*/ }, async (args) => {
+        const loader = path.extname(args.path).slice(1) as Loader;
+        const contents = Buffer.from(
+          await fs.promises.readFile(args.path)
+        ).toString();
+
+        const transformed = await transformAsync(contents, {
+          ...babelConfig,
+          filename: args.path,
+          sourceMaps: false,
+        });
+
+        if (transformed === null || !transformed.code) {
+          throw new Error('babel failed !!');
+        }
+
+        return {
+          contents: transformed.code,
+          loader,
+        };
+      });
     },
   };
 };

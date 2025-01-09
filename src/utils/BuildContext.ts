@@ -13,12 +13,9 @@ import {
   getUserEsbuildConfig,
   makeScriptPlugin,
 } from '../constants/config';
-import { importVirtualModulesLoader } from '../plugins/esbuild/importVirtualModulesLoader';
 import { babelLoader } from '../plugins/esbuild/babel';
 import { mergeConfig } from './config';
-import { getJsPolyfills } from '../constants/polyfills';
 import { fakeAssetsLoader } from '../plugins/esbuild/fakeAssetsLoader';
-import path from 'path';
 import type { ChainingLoader } from '../plugins/esbuild/makePluginByChangingLoaders';
 
 interface Props {
@@ -26,12 +23,15 @@ interface Props {
   platform: string;
   minify?: boolean;
   dev?: boolean;
-  entryFile?: string;
+  entryFile: string;
   write?: boolean;
   outfile?: string;
   sourcemap?: boolean | 'linked' | 'inline' | 'external' | 'both';
   scriptLoaders?: ChainingLoader[];
   plugins?: Plugin[];
+  header?: string;
+  footer?: string;
+  bundle?: boolean;
 }
 
 class BuildContext {
@@ -52,13 +52,16 @@ class BuildContext {
     root,
     dev = true,
     platform: platformFromProps,
-    entryFile: entryFileFromProps,
+    entryFile,
     sourcemap,
     write = true,
     outfile,
     minify = true,
     scriptLoaders = [],
     plugins = [],
+    header,
+    footer,
+    bundle = true,
   }: Props) {
     if (!validatePlatform(platformFromProps)) {
       throw new Error('invalid platform !!');
@@ -71,26 +74,10 @@ class BuildContext {
     const define = getDefine(dev);
     const resolveExtensions = getResolveExtensions(platform);
 
-    let entryFile = entryFileFromProps;
-    if (!entryFile) {
-      for (const extension of resolveExtensions) {
-        try {
-          entryFile = require.resolve(path.join(root, `index${extension}`));
-          break;
-        } catch {}
-      }
-
-      if (!entryFile) {
-        throw new Error('no entry file !!');
-      }
-    }
-
     const scriptPlugin = makeScriptPlugin(
-      importVirtualModulesLoader({
-        modules: ['react-native/Libraries/Core/InitializeCore'],
-        applyIds: [entryFile],
+      babelLoader({
+        babelConfig: userBabelConfig,
       }),
-      babelLoader({ babelConfig: userBabelConfig }),
       ...scriptLoaders
     );
 
@@ -99,7 +86,7 @@ class BuildContext {
       {
         sourceRoot: root,
         define,
-        bundle: true,
+        bundle,
         minify,
         resolveExtensions,
         plugins: [scriptPlugin, ...plugins],
@@ -107,8 +94,6 @@ class BuildContext {
       },
       getJsStyle()
     );
-
-    const jsPolyfills = await getJsPolyfills(defaultBuildOptions);
 
     if (write && !outfile) {
       throw new Error('no outfile !!');
@@ -122,7 +107,10 @@ class BuildContext {
           : './node_modules/.cache/react-native-esbuild',
       // TODO: batter position ??
       banner: {
-        js: jsPolyfills,
+        js: header ?? '',
+      },
+      footer: {
+        js: footer ?? '',
       },
       write,
       metafile: true,
@@ -133,9 +121,10 @@ class BuildContext {
   }
 
   async build() {
+    const start = Date.now();
     console.info('bundling for', this.platform);
     const result = await this.context.rebuild();
-    console.info('bundled !');
+    console.info(`bundled ! ${Date.now() - start}ms`);
     this.last = result;
     return result;
   }

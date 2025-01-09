@@ -10,6 +10,11 @@ import configureHMR from '../hmr/configureHMR';
 import replaceHMRClient from '../plugins/esbuild/replaceHMRClient';
 
 import { createServer } from 'http';
+import { importVirtualModulesLoader } from '../plugins/esbuild/importVirtualModulesLoader';
+import { getDefine, getResolveExtensions } from '../constants/config';
+import { sync as resolveSync } from 'resolve';
+import path from 'path';
+import { getJsPolyfills } from '../constants/polyfills';
 
 export async function start(_: string[], config: Config, args: StartArguments) {
   const { root } = config;
@@ -41,6 +46,12 @@ export async function start(_: string[], config: Config, args: StartArguments) {
     res.end('packager-status:running');
   });
 
+  const polyfillsPromise = getJsPolyfills({
+    sourceRoot: root,
+    define: getDefine(true),
+    minify: false,
+  });
+
   routes.set('/index.bundle', async (req, res) => {
     const { platform, dev, minify } = req.query as unknown as BundleQuery;
 
@@ -48,14 +59,30 @@ export async function start(_: string[], config: Config, args: StartArguments) {
 
     let buildContext = buildContextOf[platform];
     if (!buildContext) {
+      const extensions = getResolveExtensions(platform);
+      const entryFile = resolveSync(path.join(root, 'index'), {
+        basedir: root,
+        extensions,
+      });
+
+      const polyfills = await polyfillsPromise;
+
       buildContext = await BuildContext.create({
         root,
+        entryFile,
         platform,
         dev: dev === 'true',
         minify: minify === 'true',
         write: false,
         sourcemap: 'inline',
+        header: polyfills,
         plugins: [replaceHMRClient()],
+        scriptLoaders: [
+          importVirtualModulesLoader({
+            modules: ['react-native/Libraries/Core/InitializeCore'],
+            applyIds: [entryFile],
+          }),
+        ],
       });
       buildContextOf[platform] = buildContext;
     }

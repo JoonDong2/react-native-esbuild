@@ -2,6 +2,9 @@ import { type BundleArguments } from './types';
 import { type Config } from '@react-native-community/cli-types';
 import fs from 'fs';
 import BundleService from '../utils/BuildContext';
+import { getJsPolyfills } from '../constants/polyfills';
+import { getDefine } from '../constants/config';
+import { importVirtualModulesLoader } from '../plugins/esbuild/importVirtualModulesLoader';
 
 export async function bundle(
   _: string[],
@@ -18,6 +21,13 @@ export async function bundle(
     entryFile,
   } = args;
   const dev = JSON.parse(devString);
+
+  const polyfills = await getJsPolyfills({
+    sourceRoot: root,
+    define: getDefine(false),
+    minify: true,
+  });
+
   const buildContext = await BundleService.create({
     root,
     platform,
@@ -27,6 +37,13 @@ export async function bundle(
     write: true,
     outfile: bundleOutput,
     entryFile,
+    header: polyfills,
+    scriptLoaders: [
+      importVirtualModulesLoader({
+        modules: ['react-native/Libraries/Core/InitializeCore'],
+        applyIds: [entryFile],
+      }),
+    ],
   });
 
   await buildContext.build();
