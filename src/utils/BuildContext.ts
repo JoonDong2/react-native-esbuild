@@ -14,7 +14,7 @@ import {
   makeScriptPlugin,
 } from '../constants/config';
 import { babelLoader } from '../plugins/esbuild/babel';
-import { mergeConfig } from './config';
+import { mergeEsbuildConfig } from './config';
 import { fakeAssetsLoader } from '../plugins/esbuild/fakeAssetsLoader';
 import type { ChainingLoader } from '../plugins/esbuild/makePluginByChangingLoaders';
 
@@ -81,7 +81,7 @@ class BuildContext {
       ...scriptLoaders
     );
 
-    const defaultBuildOptions = mergeConfig(
+    const defaultBuildOptions = mergeEsbuildConfig(
       userEsbuildConfig,
       {
         sourceRoot: root,
@@ -99,7 +99,7 @@ class BuildContext {
       throw new Error('no outfile !!');
     }
 
-    const mergedConfig = mergeConfig(defaultBuildOptions, {
+    const mergedConfig = mergeEsbuildConfig(defaultBuildOptions, {
       entryPoints: [entryFile],
       outfile:
         write && outfile

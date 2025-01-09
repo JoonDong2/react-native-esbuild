@@ -152,7 +152,7 @@ function mergeConfigRecursively(
   return merged;
 }
 
-function _mergeConfig<
+export function mergeConfig<
   D extends Record<string, any>,
   O extends Record<string, any>,
 >(
@@ -167,7 +167,9 @@ function _mergeConfig<
   return mergeConfigRecursively(defaults, overrides, isRoot ? '' : '.');
 }
 
-export const mergeConfig = (...configs: BuildOptions[]): BuildOptions => {
+export const mergeEsbuildConfig = (
+  ...configs: BuildOptions[]
+): BuildOptions => {
   if (!Array.isArray(configs) || configs.length === 0) {
     throw new Error('empty configs !!');
   }
@@ -180,6 +182,6 @@ export const mergeConfig = (...configs: BuildOptions[]): BuildOptions => {
   const remains = configs.slice(1)!;
 
   return remains.reduce<BuildOptions>((acc, cur) => {
-    return _mergeConfig<BuildOptions, BuildOptions>(acc, cur);
+    return mergeConfig<BuildOptions, BuildOptions>(acc, cur);
   }, first);
 };

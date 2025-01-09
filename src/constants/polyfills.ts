@@ -1,5 +1,5 @@
 import esbuild, { type BuildOptions } from 'esbuild';
-import { mergeConfig } from '../utils/config';
+import { mergeEsbuildConfig } from '../utils/config';
 import { babel } from '../plugins/esbuild/babel';
 import { getJsStyle } from './config';
 
@@ -8,7 +8,7 @@ export const getJsPolyfills = async (
 ) => {
   return (
     await esbuild.build(
-      mergeConfig(options, getJsStyle(), {
+      mergeEsbuildConfig(options, getJsStyle(), {
         outdir: 'node_modules/.cache/react-native-esbuild/',
         entryPoints: require('@react-native/js-polyfills')(),
         sourcemap: false,
