@@ -15,6 +15,8 @@ import { getDefine, getResolveExtensions } from '../constants/config';
 import { sync as resolveSync } from 'resolve';
 import path from 'path';
 import { getJsPolyfills } from '../constants/polyfills';
+import addRefresh from '../plugins/esbuild/addRefresh';
+import { hasReactComponent } from '../utils/validate';
 
 export async function start(_: string[], config: Config, args: StartArguments) {
   const { root } = config;
@@ -74,10 +76,13 @@ export async function start(_: string[], config: Config, args: StartArguments) {
         dev: dev === 'true',
         minify: minify === 'true',
         write: false,
-        sourcemap: 'inline',
+        sourcemap: false,
         header: polyfills,
         plugins: [replaceHMRClient()],
         scriptLoaders: [
+          addRefresh(
+            (_, contents) => !!contents && hasReactComponent(contents)
+          ),
           importVirtualModulesLoader({
             modules: ['react-native/Libraries/Core/InitializeCore'],
             applyIds: [entryFile],

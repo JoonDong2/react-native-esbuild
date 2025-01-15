@@ -1,13 +1,14 @@
-import type { OnLoadArgs, OnLoadResult, Plugin } from 'esbuild';
+import type { Loader, OnLoadArgs, OnLoadResult, Plugin } from 'esbuild';
 import fs from 'fs';
 import { mergeFilters } from '../../utils/regexp';
+import nodePath from 'path';
 
-const defaultPreProcess = async (args: OnLoadArgs) => {
+const defaultPreProcess = async (args: OnLoadArgs): Promise<OnLoadResult> => {
   const { path } = args;
   const contents = await fs.promises.readFile(path);
   return {
     contents,
-    ...args,
+    loader: nodePath.extname(args.path).slice(1) as Loader,
   };
 };
 

@@ -44,3 +44,14 @@ export const getJsStyle = (): BuildOptions => {
     target: 'es2015',
   };
 };
+
+// https://github.com/facebook/metro/blob/main/docs/Configuration.md#resolvermainfields
+export const getMainFields = () => {
+  return ['react-native', 'browser', 'main'];
+};
+
+// https://esbuild.github.io/api/#how-conditions-work
+// https://github.com/facebook/react-native/blob/main/packages/metro-config/src/index.flow.js#L57
+export const getConditionNames = () => {
+  return ['default', 'require', 'import', 'react-native'];
+};

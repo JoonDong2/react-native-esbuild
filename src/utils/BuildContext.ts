@@ -6,15 +6,17 @@ import type {
 import { validatePlatform, type Platform } from '../constants/platform';
 import esbuild from 'esbuild';
 import {
+  getConditionNames,
   getDefine,
   getJsStyle,
+  getMainFields,
   getResolveExtensions,
   getUserBabelConfig,
   getUserEsbuildConfig,
   makeScriptPlugin,
 } from '../constants/config';
 import { babelLoader } from '../plugins/esbuild/babel';
-import { mergeEsbuildConfig } from './config';
+import { mergeConfig, mergeEsbuildConfig } from './config';
 import { fakeAssetsLoader } from '../plugins/esbuild/fakeAssetsLoader';
 import type { ChainingLoader } from '../plugins/esbuild/makePluginByChangingLoaders';
 
@@ -40,6 +42,16 @@ class BuildContext {
   cancel: () => Promise<void>;
   dispose: () => Promise<void>;
   last?: BuildResult;
+
+  resolvedPaths: Set<string> = new Set();
+
+  pushPath(absPath: string) {
+    this.resolvedPaths.add(absPath);
+  }
+
+  isResolved(absPath: string) {
+    return this.resolvedPaths.has(absPath);
+  }
 
   private constructor(platform: Platform, context: BuildContextType) {
     this.platform = platform;
@@ -74,15 +86,23 @@ class BuildContext {
     const define = getDefine(dev);
     const resolveExtensions = getResolveExtensions(platform);
 
+    const mergedBabelConfig = mergeConfig(
+      userBabelConfig,
+      dev
+        ? {
+            plugins: [require('react-refresh/babel')],
+          }
+        : {}
+    );
+
     const scriptPlugin = makeScriptPlugin(
       babelLoader({
-        babelConfig: userBabelConfig,
+        babelConfig: mergedBabelConfig,
       }),
       ...scriptLoaders
     );
 
     const defaultBuildOptions = mergeEsbuildConfig(
-      userEsbuildConfig,
       {
         sourceRoot: root,
         define,
@@ -92,7 +112,9 @@ class BuildContext {
         plugins: [scriptPlugin, ...plugins],
         sourcemap,
       },
-      getJsStyle()
+      getJsStyle(),
+      // Since the onResolve plugin for HMR needs to take priority, its precedence is deferred (User-defined settings should probably take precedence?
+      userEsbuildConfig
     );
 
     if (write && !outfile) {
@@ -114,7 +136,9 @@ class BuildContext {
       },
       write,
       metafile: true,
+      mainFields: getMainFields(),
       plugins: [fakeAssetsLoader()],
+      conditions: getConditionNames(),
     });
 
     return new BuildContext(platform, await esbuild.context(mergedConfig));

@@ -11,7 +11,13 @@ const workspace = () => {
           };
         }
 
-        if (args.path === 'react-native' || args.path === 'react') {
+        if (
+          args.path === 'react' ||
+          args.path === 'react-native' ||
+          args.path === '@react-native' ||
+          args.path.startsWith('react-refresh') ||
+          args.path.startsWith('@babel/runtime')
+        ) {
           const nodeModules = path.resolve(__dirname, '../../../node_modules');
 
           return {
