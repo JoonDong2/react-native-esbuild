@@ -8,6 +8,7 @@ A command set(`bundle`, `start`) for building and developing React Native projec
 
 ```sh
 yarn install
+yarn prepare
 
 yarn example android
 // OR
