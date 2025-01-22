@@ -27,3 +27,5 @@ const Esbuild = EsbuildModule
 export function evaluateJavascript(code: string): Promise<number> {
   return Esbuild.evaluateJavascript(code);
 }
+
+export { type ExposedBuildInfo } from './utils/BuildContext';

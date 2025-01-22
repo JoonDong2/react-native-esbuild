@@ -4,6 +4,7 @@ import {
   type ChainingLoader,
 } from '../plugins/esbuild/makePluginByChangingLoaders';
 import { getConfig } from '../utils/config';
+import type { ExposedBuildInfo } from '../utils/BuildContext';
 
 export const getDefine = (dev: boolean) => {
   return {
@@ -30,12 +31,27 @@ export const makeScriptPlugin = (
   );
 };
 
-export const getUserEsbuildConfig = (root: string) => {
-  return getConfig(`${root}/esbuild.config.js`);
+const injectDataToConfig = (config?: Function | Object, data?: any) => {
+  if (typeof config === 'function' && data) {
+    return config(data);
+  }
+  return config;
 };
 
-export const getUserBabelConfig = (root: string) => {
-  return getConfig(`${root}/babel.config.js`);
+export const getUserEsbuildConfig = (
+  root: string,
+  exposedBuildInfo?: ExposedBuildInfo
+) => {
+  const config = getConfig(`${root}/esbuild.config.js`);
+  return injectDataToConfig(config, exposedBuildInfo);
+};
+
+export const getUserBabelConfig = (
+  root: string,
+  exposedBuildInfo?: ExposedBuildInfo
+) => {
+  const config = getConfig(`${root}/babel.config.js`);
+  return injectDataToConfig(config, exposedBuildInfo);
 };
 
 export const getJsStyle = (): BuildOptions => {

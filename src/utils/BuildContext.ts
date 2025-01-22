@@ -19,6 +19,7 @@ import { babelLoader } from '../plugins/esbuild/babel';
 import { mergeConfig, mergeEsbuildConfig } from './config';
 import { fakeAssetsLoader } from '../plugins/esbuild/fakeAssetsLoader';
 import type { ChainingLoader } from '../plugins/esbuild/makePluginByChangingLoaders';
+import _ from 'lodash';
 
 interface Props {
   root: string;
@@ -34,7 +35,24 @@ interface Props {
   header?: string;
   footer?: string;
   bundle?: boolean;
+  purpose?: 'bundle' | 'start' | 'hmr';
 }
+
+const exposedBuildProps = [
+  'root',
+  'platform',
+  'dev',
+  'minify',
+  'entryFile',
+  'bundle',
+  'purpose',
+] as const;
+
+export type ExposedBuildInfo = Pick<Props, (typeof exposedBuildProps)[number]>;
+
+const extractExtractExposedBuildInfo = (props: Props): ExposedBuildInfo => {
+  return _.pick(props, exposedBuildProps);
+};
 
 class BuildContext {
   private platform: Platform;
@@ -60,29 +78,33 @@ class BuildContext {
     this.dispose = context.dispose;
   }
 
-  static async create({
-    root,
-    dev = true,
-    platform: platformFromProps,
-    entryFile,
-    sourcemap,
-    write = true,
-    outfile,
-    minify = true,
-    scriptLoaders = [],
-    plugins = [],
-    header,
-    footer,
-    bundle = true,
-  }: Props) {
+  static async create(props: Props) {
+    const {
+      root,
+      dev = true,
+      platform: platformFromProps,
+      entryFile,
+      sourcemap,
+      write = true,
+      outfile,
+      minify = true,
+      scriptLoaders = [],
+      plugins = [],
+      header,
+      footer,
+      bundle = true,
+    } = props;
+
     if (!validatePlatform(platformFromProps)) {
       throw new Error('invalid platform !!');
     }
 
     const platform = platformFromProps as Platform;
 
-    const userEsbuildConfig = getUserEsbuildConfig(root);
-    const userBabelConfig = getUserBabelConfig(root);
+    const exposedBuildInfo = extractExtractExposedBuildInfo(props);
+
+    const userEsbuildConfig = getUserEsbuildConfig(root, exposedBuildInfo);
+    const userBabelConfig = getUserBabelConfig(root, exposedBuildInfo);
     const define = getDefine(dev);
     const resolveExtensions = getResolveExtensions(platform);
 
