@@ -7,17 +7,17 @@ import { Gaze } from 'gaze';
 import { groupBy } from 'lodash';
 import addRefresh from '../plugins/esbuild/addRefresh';
 import {
-  getAbsolutePath,
   getRelativePath,
   removeLeadingSlash,
   toSnakeCase,
 } from '../utils/path';
 import { extractInputs, updateInputs } from '../utils/metafile';
 import dedent from 'dedent';
-import { getResolveExtensions } from '../constants/config';
+import { getMainFields, getResolveExtensions } from '../constants/config';
 import { transformAsync } from '@babel/core';
 import { hasReactComponent } from '../utils/validate';
 import addFullRefresh from '../plugins/esbuild/addFullRefresh';
+import { metroResolve } from '../utils/metroResolve';
 
 interface Client {
   id: string;
@@ -71,10 +71,16 @@ const configureHMR = (
               name: 'decide-external',
               setup(build) {
                 build.onResolve({ filter: /\.*/ }, (args) => {
-                  const absPath = getAbsolutePath({
+                  const absPath = metroResolve({
+                    dev: true,
                     path: args.path,
                     basefile: args.importer,
-                    extensions: getResolveExtensions(platform),
+                    extensions: getResolveExtensions(platform).map((ext) =>
+                      ext.slice(1)
+                    ),
+                    mainFields: getMainFields(),
+                    platform,
+                    root,
                   });
 
                   const relativePath = getRelativePath(absPath, root);
@@ -131,7 +137,15 @@ const configureHMR = (
 
         const transformedCode = await transformAsync(code, {
           plugins: [
-            require('../plugins/babel/replaceRequireToFunction')(platform),
+            require('../plugins/babel/replaceRequireToFunction')({
+              mainFields: getMainFields(),
+              platform,
+              root,
+              dev: true,
+              extensions: getResolveExtensions(platform).map((ext) =>
+                ext.slice(1)
+              ),
+            }),
           ],
           filename: file,
           compact: false,

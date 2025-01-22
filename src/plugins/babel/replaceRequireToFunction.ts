@@ -1,10 +1,18 @@
 import * as babelTypes from '@babel/types';
 import { type PluginObj } from '@babel/core';
-import { getAbsolutePath, removeLeadingSlash } from '../../utils/path';
-import { getResolveExtensions } from '../../constants/config';
+import { removeLeadingSlash } from '../../utils/path';
+import { metroResolve } from '../../utils/metroResolve';
 
-module.exports = function (platform: string) {
-  const extensions = getResolveExtensions(platform);
+interface Props {
+  mainFields: string[];
+  platform: string;
+  root: string;
+  dev: boolean;
+  extensions: string[];
+}
+
+module.exports = function (props: Props) {
+  const { mainFields, platform, root, dev, extensions } = props;
   return function ({ types: t }: { types: typeof babelTypes }): PluginObj {
     return {
       visitor: {
@@ -19,10 +27,14 @@ module.exports = function (platform: string) {
           ) {
             const requirePath = args[0].node.value;
             const transformedPath = removeLeadingSlash(
-              getAbsolutePath({
+              metroResolve({
                 path: requirePath,
-                basefile: state.filename,
+                basefile: state.filename!,
                 extensions,
+                platform,
+                mainFields,
+                root,
+                dev,
               })
             );
 

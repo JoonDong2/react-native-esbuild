@@ -20,6 +20,7 @@ import { mergeConfig, mergeEsbuildConfig } from './config';
 import { fakeAssetsLoader } from '../plugins/esbuild/fakeAssetsLoader';
 import type { ChainingLoader } from '../plugins/esbuild/makePluginByChangingLoaders';
 import _ from 'lodash';
+import { metroResolve } from './metroResolve';
 
 interface Props {
   root: string;
@@ -125,18 +126,38 @@ class BuildContext {
     );
 
     const defaultBuildOptions = mergeEsbuildConfig(
+      userEsbuildConfig,
       {
         sourceRoot: root,
         define,
         bundle,
         minify,
         resolveExtensions,
-        plugins: [scriptPlugin, ...plugins],
+        plugins: [
+          ...plugins,
+          scriptPlugin,
+          {
+            name: 'resolve',
+            setup(build) {
+              build.onResolve({ filter: /.*/ }, (args) => {
+                return {
+                  path: metroResolve({
+                    dev,
+                    path: args.path,
+                    basefile: args.importer,
+                    extensions: resolveExtensions.map((ext) => ext.slice(1)),
+                    mainFields: getMainFields(),
+                    platform,
+                    root,
+                  }),
+                };
+              });
+            },
+          },
+        ],
         sourcemap,
       },
-      getJsStyle(),
-      // Since the onResolve plugin for HMR needs to take priority, its precedence is deferred (User-defined settings should probably take precedence?
-      userEsbuildConfig
+      getJsStyle()
     );
 
     if (write && !outfile) {

@@ -2965,6 +2965,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/find-package-json@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@types/find-package-json@npm:1.2.6"
+  dependencies:
+    "@types/node": "*"
+  checksum: 0b827ce1b878af3e3a85d05017605b5d522e617567b04eb30c9ec528311eee37ab8d9a5f4cae735931f7d1fc1310de0d722a9cad89a30cc4ccd0a9cdb6a86cd2
+  languageName: node
+  linkType: hard
+
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.9
   resolution: "@types/graceful-fs@npm:4.1.9"
@@ -6107,6 +6116,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-package-json@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "find-package-json@npm:1.2.0"
+  checksum: ea3fc597c3b3bbdb93f91d62debe7b58f388d55e71c2879e3bd77472c78ce8f7ac2c38f5a2d314176f05cb54808554203c72518b27689efa76e46284094a4370
+  languageName: node
+  linkType: hard
+
 "find-up-simple@npm:^1.0.0":
   version: 1.0.0
   resolution: "find-up-simple@npm:1.0.0"
@@ -8945,7 +8961,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-resolver@npm:0.81.0":
+"metro-resolver@npm:0.81.0, metro-resolver@npm:^0.81.0":
   version: 0.81.0
   resolution: "metro-resolver@npm:0.81.0"
   dependencies:
@@ -10658,6 +10674,7 @@ __metadata:
     "@release-it/conventional-changelog": ^9.0.2
     "@types/enhanced-resolve": ^5.0.2
     "@types/express": ^5.0.0
+    "@types/find-package-json": ^1.2.6
     "@types/jest": ^29.5.5
     "@types/lodash": ^4.17.14
     "@types/react": ^18.2.44
@@ -10671,9 +10688,11 @@ __metadata:
     eslint-config-prettier: ^9.0.0
     eslint-plugin-prettier: ^5.0.1
     express: ^4.21.2
+    find-package-json: ^1.2.0
     gaze: ^1.1.3
     jest: ^29.7.0
     lodash: ^4.17.21
+    metro-resolver: ^0.81.0
     prettier: ^3.0.3
     react: 18.3.1
     react-native: 0.76.5
