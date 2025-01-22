@@ -2932,15 +2932,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/enhanced-resolve@npm:^5.0.2":
-  version: 5.0.2
-  resolution: "@types/enhanced-resolve@npm:5.0.2"
-  dependencies:
-    enhanced-resolve: "*"
-  checksum: 33f812c5a524a42b26b4f0ee0cf4732f6a9b8f30313be48e76f726a2beb845c28b11a7a85f34ccf18a07e9080c7aa0d555f4ca9c7139d98908b0309e06bd236b
-  languageName: node
-  linkType: hard
-
 "@types/express-serve-static-core@npm:^5.0.0":
   version: 5.0.4
   resolution: "@types/express-serve-static-core@npm:5.0.4"
@@ -5252,22 +5243,6 @@ __metadata:
   dependencies:
     once: ^1.4.0
   checksum: 530a5a5a1e517e962854a31693dbb5c0b2fc40b46dad2a56a2deec656ca040631124f4795823acc68238147805f8b021abbe221f4afed5ef3c8e8efc2024908b
-  languageName: node
-  linkType: hard
-
-"enhanced-resolve@link:./modules/enhanced-resolve::locator=react-native-esbuild%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "enhanced-resolve@link:./modules/enhanced-resolve::locator=react-native-esbuild%40workspace%3A."
-  languageName: node
-  linkType: soft
-
-"enhanced-resolve@npm:*":
-  version: 5.18.0
-  resolution: "enhanced-resolve@npm:5.18.0"
-  dependencies:
-    graceful-fs: ^4.2.4
-    tapable: ^2.2.0
-  checksum: 77c6b11f0d19f21f52214e5a2c0dfb7070decb4045572f44be4cacf92b4be5e2c1d9a4c044a226d1003ca9daf9b71d498d256e7520ff5060f23d0284f814d392
   languageName: node
   linkType: hard
 
@@ -10672,7 +10647,6 @@ __metadata:
     "@react-native-community/cli": 15.0.1
     "@react-native/eslint-config": ^0.73.1
     "@release-it/conventional-changelog": ^9.0.2
-    "@types/enhanced-resolve": ^5.0.2
     "@types/express": ^5.0.0
     "@types/find-package-json": ^1.2.6
     "@types/jest": ^29.5.5
@@ -10682,7 +10656,6 @@ __metadata:
     "@types/ws": ^8.5.13
     dedent: ^1.5.3
     del-cli: ^5.1.0
-    enhanced-resolve: "link:./modules/enhanced-resolve"
     esbuild: "link:./modules/esbuild-custom"
     eslint: ^8.51.0
     eslint-config-prettier: ^9.0.0
@@ -12105,13 +12078,6 @@ __metadata:
     "@pkgr/core": ^0.1.0
     tslib: ^2.6.2
   checksum: 3a30e828efbdcf3b50fccab4da6e90ea7ca24d8c5c2ad3ffe98e07d7c492df121e0f75227c6e510f96f976aae76f1fa4710cb7b1d69db881caf66ef9de89360e
-  languageName: node
-  linkType: hard
-
-"tapable@npm:^2.2.0":
-  version: 2.2.1
-  resolution: "tapable@npm:2.2.1"
-  checksum: 3b7a1b4d86fa940aad46d9e73d1e8739335efd4c48322cb37d073eb6f80f5281889bf0320c6d8ffcfa1a0dd5bfdbd0f9d037e252ef972aca595330538aac4d51
   languageName: node
   linkType: hard
 
