@@ -118,6 +118,7 @@ const configureHMR = (
               },
             },
           ],
+          purpose: 'hmr',
         });
 
         const result = await buildContext.build();

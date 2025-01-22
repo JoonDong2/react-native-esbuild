@@ -70,6 +70,7 @@ export async function start(_: string[], config: Config, args: StartArguments) {
       const polyfills = await polyfillsPromise;
 
       buildContext = await BuildContext.create({
+        purpose: 'start',
         root,
         entryFile,
         platform,

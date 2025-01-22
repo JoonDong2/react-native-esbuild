@@ -44,6 +44,7 @@ export async function bundle(
         applyIds: [entryFile],
       }),
     ],
+    purpose: 'bundle',
   });
 
   await buildContext.build();
